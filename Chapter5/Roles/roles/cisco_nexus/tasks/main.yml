@@ -1,0 +1,7 @@
+---
+- name: configure logging parameters
+  nxos_config:
+    lines: 
+      - logging server 191.168.1.100
+      - logging event link-status default
+    provider: "{{ cli }}"

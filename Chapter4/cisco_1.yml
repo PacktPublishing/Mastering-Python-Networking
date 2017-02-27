@@ -1,0 +1,27 @@
+---
+- name: Configure SNMP Contact
+  hosts: "nexus"
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      host: "{{ inventory_hostname }}"
+      username: cisco
+      password: cisco
+      transport: cli
+
+  tasks:
+    - name: configure snmp contact
+      nxos_snmp_contact:
+        contact: TEST_1
+        state: present
+        provider: "{{ cli }}"
+
+      register: output
+
+    - name: show output
+      debug:
+        var: output
+
+

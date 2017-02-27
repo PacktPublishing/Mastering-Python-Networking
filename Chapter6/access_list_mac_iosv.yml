@@ -1,0 +1,29 @@
+---
+- name: Configure MAC Access List
+  hosts: "iosv-1"
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      host: "{{ ansible_host }}"
+      username: "{{ ansible_username }}"
+      password: "{{ ansible_password }}"
+      transport: cli
+  
+  tasks:
+    - name: Deny Hosts with vendor id fa16.3e00.0000  
+      ios_config: 
+        lines:
+          - access-list 700 deny fa16.3e00.0000 0000.00FF.FFFF
+          - access-list 700 permit 0000.0000.0000 FFFF.FFFF.FFFF
+        provider: "{{ cli }}"
+    - name: Apply filter on bridge group 1
+      ios_config:
+        lines: 
+          - bridge-group 1
+          - bridge-group 1 input-address-list 700
+        parents:
+          - interface GigabitEthernet0/1
+        provider: "{{ cli }}"
+

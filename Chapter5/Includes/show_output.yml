@@ -1,0 +1,4 @@
+---
+- name: show output 
+  debug: 
+    var: output

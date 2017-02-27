@@ -1,0 +1,34 @@
+---
+- name: Template Looping
+  hosts: localhost
+
+  vars: 
+    nexus_devices: {
+        "nx-osv-1": {
+            "hostname": "nx-osv-1", 
+            "username": "cisco", 
+            "password": "cisco", 
+            "vlans": [100, 200, 300],
+            "l3_vlan_interfaces": True,
+            "vlan_interfaces": [
+                {"int_num": "100", "ip": "192.168.10.1"},
+                {"int_num": "200", "ip": "192.168.20.1"},
+                {"int_num": "300", "ip": "192.168.30.1"}
+            ],
+            "netflow_enable": True    
+        },
+        "nx-osv-2": {
+            "hostname": "nx-osv-2",
+            "username": "cisco",
+            "password": "cisco",
+            "vlans": [100, 200, 300],
+            "l3_vlan_interfaces": False,
+            "netflow_enable": False
+        }
+    }
+  tasks:
+    - name: create router configuration files
+      template: 
+        src=./nxos.j2
+        dest=./{{ item.key }}.conf
+      with_dict: "{{ nexus_devices }}"

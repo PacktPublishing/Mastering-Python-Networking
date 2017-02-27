@@ -1,0 +1,13 @@
+---
+- name: Your First Custom Module
+  hosts: localhost
+  gather_facts: false
+  connection: local
+ 
+  tasks:
+    - name: Show Version
+      action: custom_module_1 host="172.16.1.142" username="cisco" password="cisco"
+      register: output
+
+    - debug:
+        var: output

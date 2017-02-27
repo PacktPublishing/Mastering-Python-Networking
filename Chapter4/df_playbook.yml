@@ -1,0 +1,7 @@
+---
+- hosts: 192.168.199.170
+  
+  tasks:
+      - name: check disk usage
+        shell: df > df_temp.txt
+

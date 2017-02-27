@@ -1,0 +1,22 @@
+[all:vars]
+username=cisco
+password=cisco
+
+[servers]
+192.168.199.185
+
+[iosv-devices]
+ios-r1 ansible_host=172.16.1.134
+ios-r2 ansible_host=172.16.1.135
+
+[nxosv-devices]
+nxos-r1 ansible_host=172.16.1.142
+nxos-r2 ansible_host=172.16.1.143
+
+[eos-devices]
+arista1 ansible_host=192.168.199.158
+
+[eos-devices:vars]
+username=arista
+password=arista
+

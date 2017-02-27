@@ -1,0 +1,10 @@
+---
+- name: show users 
+  hosts: localhost
+
+  tasks:
+    - name: show local users
+      command: who
+      register: output
+
+    - include: show_output.yml

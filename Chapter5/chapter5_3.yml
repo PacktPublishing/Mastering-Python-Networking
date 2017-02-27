@@ -1,0 +1,27 @@
+---
+- name: EOS Command Output
+  hosts: "arista1"
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      host: "{{ ansible_host }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      transport: cli
+
+  tasks:
+    - name: "sh int ethernet 1/3 | json"
+      eos_command:
+        commands:
+            - "show interface ethernet 1/3 | json"
+        provider: "{{ cli }}"
+        waitfor: 
+          - "result[0].interfaces.Ethernet1/3.interfaceStatus eq disabled"
+
+      register: output
+    - name: show output
+      debug:
+        msg: "Interface Disabled, Safe to Proceed"
+

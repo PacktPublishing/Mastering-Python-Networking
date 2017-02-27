@@ -1,0 +1,6 @@
+[nxosv-devices]
+nx-osv-1 ansible_host=172.16.1.155 ansible_username=cisco ansible_password=cisco
+
+[iosv-devices]
+iosv-1 ansible_host=172.16.1.160 ansible_username=cisco ansible_password=cisco
+

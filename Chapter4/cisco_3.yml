@@ -1,0 +1,30 @@
+---
+- name: Configure SNMP Contact
+  hosts: "nexus_by_name"
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      host: "{{ ansible_host }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      transport: cli
+
+  tasks:
+    - name: configure snmp contact
+      nxos_snmp_contact:
+        contact: TEST_1
+        state: present
+        provider: "{{ cli }}"
+
+      register: output
+
+    - name: show output in output["end_state"]["contact"]
+      debug:
+        msg: '{{ output["end_state"]["contact"] }}'
+
+    - name: show output in output.end_state.contact
+      debug: 
+        msg: '{{ output.end_state.contact }}'
+

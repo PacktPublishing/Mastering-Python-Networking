@@ -1,0 +1,9 @@
+---
+- name: Template Basic
+  hosts: localhost
+
+  tasks:
+    - name: copy one file to another
+      template: 
+        src=./file1
+        dest=./file2

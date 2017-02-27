@@ -1,0 +1,27 @@
+---
+- name: IOS Command Output
+  hosts: "iosv-devices"
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      host: "{{ ansible_host }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      transport: cli
+
+  tasks:
+    - name: show hostname
+      ios_command:
+        commands:
+            - show run | i hostname
+        provider: "{{ cli }}"
+      
+      register: output
+
+    - name: show output 
+      when: '"iosv-2" in "{{ output.stdout }}"'
+      debug:
+        msg: '{{ output }}'
+

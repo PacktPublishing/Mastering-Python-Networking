@@ -1,0 +1,6 @@
+---
+- name: change logging level
+  nxos_config:
+    lines:
+      - logging level local7 7 
+    provider: "{{ cli }}"

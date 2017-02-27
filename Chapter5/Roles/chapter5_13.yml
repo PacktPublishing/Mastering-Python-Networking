@@ -1,0 +1,9 @@
+---
+- name: playbook for spine role
+  hosts: "spines"
+  gather_facts: false
+  connection: local
+
+  roles: 
+    - cisco_nexus
+    - spines

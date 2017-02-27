@@ -1,0 +1,23 @@
+---
+- name: Add Multiple Vlans
+  hosts: "nxos-r1"
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      host: "{{ ansible_host }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      transport: cli
+    vlan_numbers: [100, 200, 300]
+
+  tasks:
+    - name: add vlans
+      eos_config:
+        lines:
+            - vlan {{ item }}
+        provider: "{{ cli }}"
+      with_items: "{{ vlan_numbers }}"
+      register: output
+

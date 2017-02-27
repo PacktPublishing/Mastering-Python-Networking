@@ -1,0 +1,7 @@
+terminal length 0
+iosv-1#config t
+Enter configuration commands, one per line.  End with CNTL/Z.
+iosv-1(config)#logging buffered 30000
+iosv-1(config)#end
+iosv-1#copy run start
+Destination filename [startup-config]? 

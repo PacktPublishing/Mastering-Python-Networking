@@ -1,0 +1,6 @@
+[cisco_nexus]
+nxos-r1 ansible_host=172.16.1.142
+nxos-r2 ansible_host=172.16.1.143
+
+[spines]
+nxos-r1 ansible_host=172.16.1.142

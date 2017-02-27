@@ -1,0 +1,4 @@
+config t
+logging buffered 30000
+end
+copy run start

@@ -1,0 +1,8 @@
+---
+- name: playbook for cisco_nexus role
+  hosts: "cisco_nexus"
+  gather_facts: false
+  connection: local
+
+  roles: 
+    - cisco_nexus

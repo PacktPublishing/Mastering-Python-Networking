@@ -1,0 +1,89 @@
+---
+- name: Configure Access List
+  hosts: "nxosv-devices"
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      host: "{{ ansible_host }}"
+      username: "{{ ansible_username }}"
+      password: "{{ ansible_password }}"
+      transport: cli
+  
+  tasks:
+    - nxos_acl:
+        name: border_inbound
+        seq: 20
+        action: deny
+        proto: tcp
+        src: 172.16.0.0/12
+        dest: any
+        log: enable
+        state: present
+        provider: "{{ cli }}"
+    - nxos_acl:
+        name: border_inbound
+        seq: 30
+        action: deny
+        proto: tcp
+        src: 192.168.0.0/16
+        dest: any
+        state: present
+        log: enable
+        provider: "{{ cli }}" 
+    - nxos_acl:
+        name: border_inbound
+        seq: 40
+        action: permit
+        proto: tcp
+        src: any
+        dest: 10.0.0.14/32
+        dest_port_op: eq
+        dest_port1: 22
+        state: present
+        log: enable
+        provider: "{{ cli }}"
+    - nxos_acl:
+        name: border_inbound
+        seq: 50
+        action: permit
+        proto: tcp
+        src: any
+        dest: 10.0.0.14/32
+        dest_port_op: eq 
+        dest_port1: 80
+        state: present
+        log: enable
+        provider: "{{ cli }}"
+    - nxos_acl:
+        name: border_inbound
+        seq: 60
+        action: permit  
+        proto: tcp
+        src: any
+        dest: any
+        state: present
+        log: enable
+        established: enable
+        provider: "{{ cli }}"
+    - nxos_acl:
+        name: border_inbound
+        seq: 1000
+        action: deny 
+        proto: ip 
+        src: any
+        dest: any
+        state: present
+        log: enable
+        provider: "{{ cli }}" 
+    - name: apply ingress acl to Ethernet 2/2
+      nxos_acl_interface: 
+        name: border_inbound
+        interface: Ethernet2/2
+        direction: ingress
+        state: present
+        provider: "{{ cli }}"         
+
+
+
