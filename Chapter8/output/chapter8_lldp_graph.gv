@@ -1,0 +1,15 @@
+digraph My_Network {
+{rank=same Client "r6-edge"}
+{rank=same r1 r2 r3}
+
+		Client -> "r6-edge"
+		"r5-tor" -> Server
+		r1 -> "r5-tor"
+		"r5-tor" -> r2
+		"r5-tor" -> r3
+		"r5-tor" -> r1
+		r2 -> "r5-tor"
+		r3 -> "r5-tor"
+		r3 -> "r6-edge"
+		"r6-edge" -> r3
+}

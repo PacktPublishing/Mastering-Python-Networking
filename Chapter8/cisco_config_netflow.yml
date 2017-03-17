@@ -1,0 +1,75 @@
+---
+- name: Enable LLDP
+  hosts: "devices"
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      host: "{{ ansible_hostname }}"
+      username: cisco
+      password: cisco
+      transport: cli
+
+  tasks:
+    - name: configure netflow export station
+      ios_config:
+        lines: 
+          - ip flow-export destination 172.16.1.173 5556 vrf Mgmt-intf
+          - ip flow-export version 5
+        provider: "{{ cli }}"
+
+    - name: configure flow export on Gi0/0
+      ios_config:
+        lines: 
+          - ip flow ingress
+          - ip flow egress
+        parents: interface GigabitEthernet0/0
+        provider: "{{ cli }}"
+
+    - name: configure flow export on Gi0/1
+      ios_config:
+        lines:
+          - ip flow ingress
+          - ip flow egress
+        parents: interface GigabitEthernet0/1
+        provider: "{{ cli }}"
+
+    - name: configure flow export on Gi0/2
+      ios_config:
+        lines:
+          - ip flow ingress
+          - ip flow egress
+        parents: interface GigabitEthernet0/2
+        provider: "{{ cli }}"
+
+- name: Configure LLDP on Gi0/3 Gi0/4
+  hosts: "edge-devices"
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      host: "{{ ansible_hostname }}"
+      username: cisco
+      password: cisco
+      transport: cli
+
+  tasks:
+    - name: configure flow export on Gi0/3
+      ios_config:
+        lines:
+          - ip flow ingress
+          - ip flow egress
+        parents: interface GigabitEthernet0/3
+        provider: "{{ cli }}"
+
+    - name: configure flow export on Gi0/4
+      ios_config:
+        lines:
+          - ip flow ingress
+          - ip flow egress
+        parents: interface GigabitEthernet0/4
+        provider: "{{ cli }}"
+
+

@@ -1,0 +1,31 @@
+---
+- name: Query LLDP Neighbors
+  hosts: "devices"
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      host: "{{ ansible_hostname }}"
+      username: cisco
+      password: cisco
+      transport: cli
+
+  tasks:
+    - name: Query for LLDP Neighbors
+      ios_command:
+        commands: show lldp neighbors
+        provider: "{{ cli }}"
+
+      register: output
+
+    - name: show output
+      debug:
+        var: output
+
+    - name: copy output to file
+      copy: content="{{ output.stdout_lines }}" dest="./tmp/{{ inventory_hostname }}_lldp_output.txt"
+
+    - name: Execute Python script to render output
+      command: ./cisco_graph_lldp.py
+

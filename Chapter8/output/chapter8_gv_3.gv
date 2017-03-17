@@ -1,0 +1,10 @@
+// My Network
+digraph {
+	core
+	distribution
+	access1
+	access2
+		core -> distribution
+		distribution -> access1
+		distribution -> access2
+}

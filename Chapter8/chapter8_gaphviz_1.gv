@@ -1,0 +1,4 @@
+graph my_network {
+    core -- distribution;
+    distribution -- access;
+}

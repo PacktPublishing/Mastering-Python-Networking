@@ -1,0 +1,10 @@
+[devices]
+r1 ansible_hostname=172.16.1.218
+r2 ansible_hostname=172.16.1.219
+r3 ansible_hostname=172.16.1.220
+r5-tor ansible_hostname=172.16.1.221
+r6-edge ansible_hostname=172.16.1.222
+
+[edge-devices]
+r5-tor ansible_hostname=172.16.1.221
+r6-edge ansible_hostname=172.16.1.222

@@ -1,0 +1,25 @@
+---
+- name: Enable LLDP
+  hosts: "devices"
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      host: "{{ ansible_hostname }}"
+      username: cisco
+      password: cisco
+      transport: cli
+
+  tasks:
+    - name: enable LLDP run
+      ios_config:
+        lines: lldp run
+        provider: "{{ cli }}"
+
+      register: output
+
+    - name: show output
+      debug:
+        var: output
+
