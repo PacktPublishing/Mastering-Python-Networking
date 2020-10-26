@@ -3,6 +3,8 @@ This is the code repository for [Mastering Python Networking](https://www.packtp
 ## About the Book
 This book begins with a review of the TCP/ IP protocol suite and a refresher of the core elements of the Python language. Next, you will start using Python and supported libraries to automate network tasks from the current major network vendors. We will look at automating traditional network devices based on the command-line interface, as well as newer devices with API support, with hands-on labs. We will then learn the concepts and practical use cases of the Ansible framework in order to achieve your network goals.
 
+## Errata
+* Page 42 (2nd bullet point):  **It is also the popular kid on the bock** _should be_ **It is also the popular kid on the block**
 
 ## Instructions and Navigation
 All of the code is organized into folders. Each folder starts with a number followed by the application name. For example, Chapter02.
