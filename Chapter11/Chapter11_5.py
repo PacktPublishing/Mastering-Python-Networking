@@ -12,10 +12,23 @@ log.setLevel(logging.DEBUG)
 from ryu.services.protocols.bgp.bgpspeaker import BGPSpeaker
 
 def dump_remote_best_path_change(event):
+    """
+    Dump remote path to remote file to remote path
+
+    Args:
+        event: (todo): write your description
+    """
     print 'the best path changed:', event.remote_as, event.prefix,\
         event.nexthop, event.is_withdraw
 
 def detect_peer_down(remote_ip, remote_as):
+    """
+    Detect peer on_ip
+
+    Args:
+        remote_ip: (str): write your description
+        remote_as: (str): write your description
+    """
     print 'Peer down:', remote_ip, remote_as
 
 if __name__ == "__main__":

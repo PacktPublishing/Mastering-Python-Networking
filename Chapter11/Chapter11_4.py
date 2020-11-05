@@ -43,6 +43,12 @@ class MySimpleRestRouter(app_manager.RyuApp):
     }
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the gateway.
+
+        Args:
+            self: (todo): write your description
+        """
         super(MySimpleRestRouter, self).__init__(*args, **kwargs)
         self.s1_gateway_mac = '00:00:00:00:00:02'  # s1 gateway is spoofing h2
         self.s2_gateway_mac = '00:00:00:00:00:01'  # s2 gateway is spoofing h1
@@ -82,6 +88,13 @@ class MySimpleRestRouter(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
+        """
+        Switch features to switch.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         datapath = ev.msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
@@ -94,6 +107,17 @@ class MySimpleRestRouter(app_manager.RyuApp):
 
 
     def add_flow(self, datapath, priority, match, actions, buffer_id=None):
+        """
+        Add a flow. flow.
+
+        Args:
+            self: (todo): write your description
+            datapath: (str): write your description
+            priority: (int): write your description
+            match: (str): write your description
+            actions: (str): write your description
+            buffer_id: (str): write your description
+        """
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
@@ -113,6 +137,13 @@ class MySimpleRestRouter(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
+        """
+        Process an incoming packet.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         msg = ev.msg
         datapath = msg.datapath
         ofproto = datapath.ofproto
@@ -207,6 +238,13 @@ class MySimpleRestRouter(app_manager.RyuApp):
                  ofp_event.EventOFPPortDescStatsReply
                  ], MAIN_DISPATCHER)
     def stats_reply_handler(self, ev):
+        """
+        Process a message.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         msg = ev.msg
         dp = msg.datapath
 
@@ -234,6 +272,13 @@ class MySimpleRestRouter(app_manager.RyuApp):
                  ofp_event.EventOFPRoleReply,
                  ], MAIN_DISPATCHER)
     def features_reply_handler(self, ev):
+        """
+        Handle a message handler.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         msg = ev.msg
         dp = msg.datapath
 

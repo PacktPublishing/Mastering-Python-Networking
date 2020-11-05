@@ -4,6 +4,12 @@ app = Flask(__name__)
 
 @app.route('/<hostname>/list_interfaces')
 def device(hostname):
+    """
+    Return the device name.
+
+    Args:
+        hostname: (str): write your description
+    """
     if hostname in routers:
         return 'Listing interfaces for %s' % hostname
     else: 

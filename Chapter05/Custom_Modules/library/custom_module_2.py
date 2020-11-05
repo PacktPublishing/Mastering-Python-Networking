@@ -4,6 +4,11 @@ import requests
 import json
 
 def main():
+    """
+    Main function.
+
+    Args:
+    """
     module = AnsibleModule(
       argument_spec = dict(
         host = dict(required=True),

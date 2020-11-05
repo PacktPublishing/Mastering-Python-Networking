@@ -8,12 +8,25 @@ class SimpleSwitch13(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the connection.
+
+        Args:
+            self: (todo): write your description
+        """
         super(SimpleSwitch13, self).__init__(*args, **kwargs)
         self.mac_to_port = {}
 
     # Catching Switch Features Events
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
+        """
+        Switch the message handler.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
 
         print("EventOFPSwitchFeatures: datapath_id {}, n_buffers {} capabilities {}".format(ev.msg.datapath_id,
                                                                                             ev.msg.n_buffers,

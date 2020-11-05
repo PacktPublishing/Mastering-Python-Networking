@@ -2,6 +2,16 @@ import pexpect
 
 
 def show_version(device, prompt, ip, username, password):
+    """
+    Show the version of a device.
+
+    Args:
+        device: (todo): write your description
+        prompt: (todo): write your description
+        ip: (str): write your description
+        username: (str): write your description
+        password: (str): write your description
+    """
     device_prompt = prompt
     child = pexpect.spawn('telnet ' + ip)
     child.expect('Username:')
