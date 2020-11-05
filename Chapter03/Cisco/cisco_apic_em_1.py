@@ -7,6 +7,11 @@ import json
 controller='URL'
 
 def getTicket():
+    """
+    Get ticket details
+
+    Args:
+    """
     # put the ip address or dns of your apic-em controller in this url
     url = "https://" + controller + "/api/v1/ticket"
 
@@ -29,6 +34,12 @@ def getTicket():
 
 
 def getNetworkDevices(ticket):
+    """
+    Method to get the list of a ticket
+
+    Args:
+        ticket: (todo): write your description
+    """
     # URL for network device REST API call to get list of existing devices on the network.
     url = "https://" + controller + "/api/v1/network-device"
 

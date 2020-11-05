@@ -31,6 +31,12 @@ class SimpleSwitch13(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the network.
+
+        Args:
+            self: (todo): write your description
+        """
         super(SimpleSwitch13, self).__init__(*args, **kwargs)
         self.mac_to_port = {}
         self.gen_id = 0
@@ -39,6 +45,13 @@ class SimpleSwitch13(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
+        """
+        Switch features to switch.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         datapath = ev.msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
@@ -56,6 +69,17 @@ class SimpleSwitch13(app_manager.RyuApp):
         self.add_flow(datapath, 0, match, actions)
 
     def add_flow(self, datapath, priority, match, actions, buffer_id=None):
+        """
+        Add a flow. flow.
+
+        Args:
+            self: (todo): write your description
+            datapath: (str): write your description
+            priority: (int): write your description
+            match: (str): write your description
+            actions: (str): write your description
+            buffer_id: (str): write your description
+        """
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
@@ -74,12 +98,26 @@ class SimpleSwitch13(app_manager.RyuApp):
     @set_ev_cls(ofp_event.EventOFPErrorMsg,
                 [HANDSHAKE_DISPATCHER, CONFIG_DISPATCHER, MAIN_DISPATCHER])
     def on_error_msg(self, ev):
+        """
+        Prints an error.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         msg = ev.msg
         print 'receive a error message: %s' % (msg)
 
 
     @set_ev_cls(dpset.EventDP, MAIN_DISPATCHER)
     def on_dp_change(self, ev):
+        """
+        Handle change change
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         if ev.enter:
             dp = ev.dp
             dpid = dp.id
@@ -92,6 +130,13 @@ class SimpleSwitch13(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPRoleReply, MAIN_DISPATCHER)
     def on_role_reply(self, ev):
+        """
+        Handle a message on a failure
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         msg = ev.msg
         dp = msg.datapath
         ofp = dp.ofproto
@@ -105,6 +150,15 @@ class SimpleSwitch13(app_manager.RyuApp):
 
 
     def send_role_request(self, datapath, role, gen_id):
+        """
+        Send role request. role
+
+        Args:
+            self: (todo): write your description
+            datapath: (str): write your description
+            role: (str): write your description
+            gen_id: (str): write your description
+        """
         ofp_parser = datapath.ofproto_parser
         print 'send a role change request'
         print 'role: %s, gen_id: %d' % (self.role_string_list[role], gen_id)
@@ -113,6 +167,13 @@ class SimpleSwitch13(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
+        """
+        Process a received packet.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         # If you hit this you might want to increase
         # the "miss_send_length" of your switch
         if ev.msg.msg_len < ev.msg.total_len:

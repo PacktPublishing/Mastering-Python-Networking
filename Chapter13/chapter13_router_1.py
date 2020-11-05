@@ -166,6 +166,14 @@ PRIORITY_TYPE_ROUTE = 'priority_route'
 
 
 def get_priority(priority_type, vid=0, route=None):
+    """
+    Get priority of priority.
+
+    Args:
+        priority_type: (str): write your description
+        vid: (int): write your description
+        route: (str): write your description
+    """
     log_msg = None
     priority = priority_type
 
@@ -193,6 +201,13 @@ def get_priority(priority_type, vid=0, route=None):
 
 
 def get_priority_type(priority, vid):
+    """
+    Gets priority type.
+
+    Args:
+        priority: (int): write your description
+        vid: (str): write your description
+    """
     if vid:
         priority -= PRIORITY_VLAN_SHIFT
     return priority
@@ -216,6 +231,12 @@ class RestRouterAPI(app_manager.RyuApp):
                  'wsgi': WSGIApplication}
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the broker.
+
+        Args:
+            self: (todo): write your description
+        """
         super(RestRouterAPI, self).__init__(*args, **kwargs)
 
         # logger configure
@@ -261,6 +282,13 @@ class RestRouterAPI(app_manager.RyuApp):
 
     @set_ev_cls(dpset.EventDP, dpset.DPSET_EV_DISPATCHER)
     def datapath_handler(self, ev):
+        """
+        Unregister a router handler.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         if ev.enter:
             RouterController.register_router(ev.dp)
         else:
@@ -268,9 +296,23 @@ class RestRouterAPI(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
+        """
+        Handle incoming incoming packet.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         RouterController.packet_in_handler(ev.msg)
 
     def _stats_reply_handler(self, ev):
+        """
+        Handle a message handler.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         msg = ev.msg
         dp = msg.datapath
 
@@ -292,11 +334,25 @@ class RestRouterAPI(app_manager.RyuApp):
     # for OpenFlow version1.0
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def stats_reply_handler_v1_0(self, ev):
+        """
+        Handle reply reply handler.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         self._stats_reply_handler(ev)
 
     # for OpenFlow version1.2/1.3
     @set_ev_cls(ofp_event.EventOFPStatsReply, MAIN_DISPATCHER)
     def stats_reply_handler_v1_2(self, ev):
+        """
+        Handle reply reply handler.
+
+        Args:
+            self: (todo): write your description
+            ev: (todo): write your description
+        """
         self._stats_reply_handler(ev)
 
     # TODO: Update routing table when port status is changed.
@@ -304,7 +360,18 @@ class RestRouterAPI(app_manager.RyuApp):
 
 # REST command template
 def rest_command(func):
+    """
+    Decorator to run a command to a command
+
+    Args:
+        func: (todo): write your description
+    """
     def _rest_command(*args, **kwargs):
+        """
+        Decorator
+
+        Args:
+        """
         try:
             msg = func(*args, **kwargs)
             return Response(content_type='application/json',
@@ -334,11 +401,28 @@ class RouterController(ControllerBase):
     _LOGGER = None
 
     def __init__(self, req, link, data, **config):
+        """
+        Initialize a webhook.
+
+        Args:
+            self: (todo): write your description
+            req: (str): write your description
+            link: (str): write your description
+            data: (todo): write your description
+            config: (todo): write your description
+        """
         super(RouterController, self).__init__(req, link, data, **config)
         self.waiters = data['waiters']
 
     @classmethod
     def set_logger(cls, logger):
+        """
+        Set the logging.
+
+        Args:
+            cls: (todo): write your description
+            logger: (todo): write your description
+        """
         cls._LOGGER = logger
         cls._LOGGER.propagate = False
         hdlr = logging.StreamHandler()
@@ -348,6 +432,13 @@ class RouterController(ControllerBase):
 
     @classmethod
     def register_router(cls, dp):
+        """
+        Register a router.
+
+        Args:
+            cls: (todo): write your description
+            dp: (todo): write your description
+        """
         dpid = {'sw_id': dpid_lib.dpid_to_str(dp.id)}
         try:
             router = Router(dp, cls._LOGGER)
@@ -359,6 +450,13 @@ class RouterController(ControllerBase):
 
     @classmethod
     def unregister_router(cls, dp):
+        """
+        Unregister a router.
+
+        Args:
+            cls: (todo): write your description
+            dp: (todo): write your description
+        """
         if dp.id in cls._ROUTER_LIST:
             cls._ROUTER_LIST[dp.id].delete()
             del cls._ROUTER_LIST[dp.id]
@@ -368,6 +466,13 @@ class RouterController(ControllerBase):
 
     @classmethod
     def packet_in_handler(cls, msg):
+        """
+        Handle incoming incoming message handler.
+
+        Args:
+            cls: (todo): write your description
+            msg: (str): write your description
+        """
         dp_id = msg.datapath.id
         if dp_id in cls._ROUTER_LIST:
             router = cls._ROUTER_LIST[dp_id]
@@ -376,40 +481,107 @@ class RouterController(ControllerBase):
     # GET /router/{switch_id}
     @rest_command
     def get_data(self, req, switch_id, **_kwargs):
+        """
+        Get a virtual switch
+
+        Args:
+            self: (todo): write your description
+            req: (str): write your description
+            switch_id: (str): write your description
+            _kwargs: (dict): write your description
+        """
         return self._access_router(switch_id, VLANID_NONE,
                                    'get_data', req)
 
     # GET /router/{switch_id}/{vlan_id}
     @rest_command
     def get_vlan_data(self, req, switch_id, vlan_id, **_kwargs):
+        """
+        Returns a vlan data.
+
+        Args:
+            self: (todo): write your description
+            req: (str): write your description
+            switch_id: (str): write your description
+            vlan_id: (str): write your description
+            _kwargs: (dict): write your description
+        """
         return self._access_router(switch_id, vlan_id,
                                    'get_data', req)
 
     # POST /router/{switch_id}
     @rest_command
     def set_data(self, req, switch_id, **_kwargs):
+        """
+        Updates a switch
+
+        Args:
+            self: (todo): write your description
+            req: (array): write your description
+            switch_id: (str): write your description
+            _kwargs: (dict): write your description
+        """
         return self._access_router(switch_id, VLANID_NONE,
                                    'set_data', req)
 
     # POST /router/{switch_id}/{vlan_id}
     @rest_command
     def set_vlan_data(self, req, switch_id, vlan_id, **_kwargs):
+        """
+        Updates a switch vlan
+
+        Args:
+            self: (todo): write your description
+            req: (todo): write your description
+            switch_id: (str): write your description
+            vlan_id: (str): write your description
+            _kwargs: (dict): write your description
+        """
         return self._access_router(switch_id, vlan_id,
                                    'set_data', req)
 
     # DELETE /router/{switch_id}
     @rest_command
     def delete_data(self, req, switch_id, **_kwargs):
+        """
+        Deletes a switch
+
+        Args:
+            self: (todo): write your description
+            req: (todo): write your description
+            switch_id: (str): write your description
+            _kwargs: (dict): write your description
+        """
         return self._access_router(switch_id, VLANID_NONE,
                                    'delete_data', req)
 
     # DELETE /router/{switch_id}/{vlan_id}
     @rest_command
     def delete_vlan_data(self, req, switch_id, vlan_id, **_kwargs):
+        """
+        Deletes a vlan.
+
+        Args:
+            self: (todo): write your description
+            req: (todo): write your description
+            switch_id: (str): write your description
+            vlan_id: (str): write your description
+            _kwargs: (dict): write your description
+        """
         return self._access_router(switch_id, vlan_id,
                                    'delete_data', req)
 
     def _access_router(self, switch_id, vlan_id, func, req):
+        """
+        Create a new router.
+
+        Args:
+            self: (todo): write your description
+            switch_id: (str): write your description
+            vlan_id: (str): write your description
+            func: (todo): write your description
+            req: (todo): write your description
+        """
         rest_message = []
         routers = self._get_router(switch_id)
         try:
@@ -424,6 +596,13 @@ class RouterController(ControllerBase):
         return rest_message
 
     def _get_router(self, switch_id):
+        """
+        Retrieve a router.
+
+        Args:
+            self: (todo): write your description
+            switch_id: (str): write your description
+        """
         routers = {}
 
         if switch_id == REST_ALL:
@@ -441,6 +620,14 @@ class RouterController(ControllerBase):
 
 class Router(dict):
     def __init__(self, dp, logger):
+        """
+        Initialize the interface.
+
+        Args:
+            self: (todo): write your description
+            dp: (int): write your description
+            logger: (todo): write your description
+        """
         super(Router, self).__init__()
         self.dp = dp
         self.dpid_str = dpid_lib.dpid_to_str(dp.id)
@@ -477,12 +664,25 @@ class Router(dict):
                          extra=self.sw_id)
 
     def delete(self):
+        """
+        Delete the thread.
+
+        Args:
+            self: (todo): write your description
+        """
         hub.kill(self.thread)
         self.thread.wait()
         self.logger.info('Stop cyclic routing table update.',
                          extra=self.sw_id)
 
     def _get_vlan_router(self, vlan_id):
+        """
+        Returns a vlan.
+
+        Args:
+            self: (todo): write your description
+            vlan_id: (str): write your description
+        """
         vlan_routers = []
 
         if vlan_id == REST_ALL:
@@ -499,6 +699,13 @@ class Router(dict):
         return vlan_routers
 
     def _add_vlan_router(self, vlan_id):
+        """
+        Adds a vlan.
+
+        Args:
+            self: (todo): write your description
+            vlan_id: (str): write your description
+        """
         vlan_id = int(vlan_id)
         if vlan_id not in self:
             vlan_router = VlanRouter(vlan_id, self.dp, self.port_data,
@@ -507,6 +714,14 @@ class Router(dict):
         return self[vlan_id]
 
     def _del_vlan_router(self, vlan_id, waiters):
+        """
+        Deletes a router from a router.
+
+        Args:
+            self: (todo): write your description
+            vlan_id: (str): write your description
+            waiters: (int): write your description
+        """
         #  Remove unnecessary VlanRouter.
         if vlan_id == VLANID_NONE:
             return
@@ -518,6 +733,15 @@ class Router(dict):
             del self[vlan_id]
 
     def get_data(self, vlan_id, dummy1, dummy2):
+        """
+        Returns a vlan.
+
+        Args:
+            self: (todo): write your description
+            vlan_id: (str): write your description
+            dummy1: (bool): write your description
+            dummy2: (bool): write your description
+        """
         vlan_routers = self._get_vlan_router(vlan_id)
         if vlan_routers:
             msgs = [vlan_router.get_data() for vlan_router in vlan_routers]
@@ -528,6 +752,15 @@ class Router(dict):
                 REST_NW: msgs}
 
     def set_data(self, vlan_id, param, waiters):
+        """
+        Sets vlan vlan.
+
+        Args:
+            self: (todo): write your description
+            vlan_id: (str): write your description
+            param: (todo): write your description
+            waiters: (array): write your description
+        """
         vlan_routers = self._get_vlan_router(vlan_id)
         if not vlan_routers:
             vlan_routers = [self._add_vlan_router(vlan_id)]
@@ -549,6 +782,15 @@ class Router(dict):
                 REST_COMMAND_RESULT: msgs}
 
     def delete_data(self, vlan_id, param, waiters):
+        """
+        Deletes a vlan.
+
+        Args:
+            self: (todo): write your description
+            vlan_id: (str): write your description
+            param: (todo): write your description
+            waiters: (int): write your description
+        """
         msgs = []
         vlan_routers = self._get_vlan_router(vlan_id)
         if vlan_routers:
@@ -566,6 +808,13 @@ class Router(dict):
                 REST_COMMAND_RESULT: msgs}
 
     def packet_in_handler(self, msg):
+        """
+        Handle incoming incoming packet.
+
+        Args:
+            self: (todo): write your description
+            msg: (str): write your description
+        """
         pkt = packet.Packet(msg.data)
         # TODO: Packet library convert to string
         # self.logger.debug('Packet in = %s', str(pkt), self.sw_id)
@@ -586,6 +835,12 @@ class Router(dict):
                                   vlan_id, extra=self.sw_id)
 
     def _cyclic_update_routing_tbl(self):
+        """
+        To update router send send a router.
+
+        Args:
+            self: (todo): write your description
+        """
         while True:
             # send ARP to all gateways.
             for vlan_router in self.values():
@@ -597,6 +852,16 @@ class Router(dict):
 
 class VlanRouter(object):
     def __init__(self, vlan_id, dp, port_data, logger):
+        """
+        Initialize vlan.
+
+        Args:
+            self: (todo): write your description
+            vlan_id: (str): write your description
+            dp: (int): write your description
+            port_data: (str): write your description
+            logger: (todo): write your description
+        """
         super(VlanRouter, self).__init__()
         self.vlan_id = vlan_id
         self.dp = dp
@@ -613,6 +878,13 @@ class VlanRouter(object):
         self._set_defaultroute_drop()
 
     def delete(self, waiters):
+        """
+        Delete all vlan reports from this method.
+
+        Args:
+            self: (todo): write your description
+            waiters: (int): write your description
+        """
         # Delete flow.
         msgs = self.ofctl.get_all_flow(waiters)
         for msg in msgs:
@@ -625,6 +897,13 @@ class VlanRouter(object):
 
     @staticmethod
     def _cookie_to_id(id_type, cookie):
+        """
+        Converts a cookie id from a cookie
+
+        Args:
+            id_type: (str): write your description
+            cookie: (str): write your description
+        """
         if id_type == REST_VLANID:
             rest_id = cookie >> COOKIE_SHIFT_VLANID
         elif id_type == REST_ADDRESSID:
@@ -636,6 +915,14 @@ class VlanRouter(object):
         return rest_id
 
     def _id_to_cookie(self, id_type, rest_id):
+        """
+        Returns the cookie id of a vlan id.
+
+        Args:
+            self: (todo): write your description
+            id_type: (str): write your description
+            rest_id: (int): write your description
+        """
         vid = self.vlan_id << COOKIE_SHIFT_VLANID
 
         if id_type == REST_VLANID:
@@ -649,14 +936,35 @@ class VlanRouter(object):
         return cookie
 
     def _get_priority(self, priority_type, route=None):
+        """
+        Gets a priority.
+
+        Args:
+            self: (todo): write your description
+            priority_type: (str): write your description
+            route: (str): write your description
+        """
         return get_priority(priority_type, vid=self.vlan_id, route=route)
 
     def _response(self, msg):
+        """
+        Add a vlanresponse.
+
+        Args:
+            self: (todo): write your description
+            msg: (dict): write your description
+        """
         if msg and self.vlan_id:
             msg.setdefault(REST_VLANID, self.vlan_id)
         return msg
 
     def get_data(self):
+        """
+        Gets data from routing data.
+
+        Args:
+            self: (todo): write your description
+        """
         address_data = self._get_address_data()
         routing_data = self._get_routing_data()
 
@@ -669,6 +977,12 @@ class VlanRouter(object):
         return self._response(data)
 
     def _get_address_data(self):
+        """
+        Get ip address data.
+
+        Args:
+            self: (todo): write your description
+        """
         address_data = []
         for value in self.address_data.values():
             default_gw = ip_addr_ntoa(value.default_gw)
@@ -679,6 +993,12 @@ class VlanRouter(object):
         return {REST_ADDRESS: address_data}
 
     def _get_routing_data(self):
+        """
+        Retrieve routing data.
+
+        Args:
+            self: (todo): write your description
+        """
         routing_data = []
         for key, value in self.routing_tbl.items():
             if value.gateway_mac is not None:
@@ -690,6 +1010,13 @@ class VlanRouter(object):
         return {REST_ROUTE: routing_data}
 
     def set_data(self, data):
+        """
+        Sets the details of an interface.
+
+        Args:
+            self: (todo): write your description
+            data: (array): write your description
+        """
         details = None
 
         try:
@@ -719,6 +1046,13 @@ class VlanRouter(object):
             raise ValueError('Invalid parameter.')
 
     def _set_address_data(self, address):
+        """
+        Configure an iotile packet
+
+        Args:
+            self: (todo): write your description
+            address: (str): write your description
+        """
         address = self.address_data.add(address)
 
         cookie = self._id_to_cookie(REST_ADDRESSID, address.address_id)
@@ -758,6 +1092,14 @@ class VlanRouter(object):
         return address.address_id
 
     def _set_routing_data(self, destination, gateway):
+        """
+        Configure routing data.
+
+        Args:
+            self: (todo): write your description
+            destination: (str): write your description
+            gateway: (todo): write your description
+        """
         err_msg = 'Invalid [%s] value.' % REST_GATEWAY
         dst_ip = ip_addr_aton(gateway, err_msg=err_msg)
         address = self.address_data.get_data(ip=dst_ip)
@@ -776,6 +1118,12 @@ class VlanRouter(object):
             return route.route_id
 
     def _set_defaultroute_drop(self):
+        """
+        Sets the default route for this vlan.
+
+        Args:
+            self: (todo): write your description
+        """
         cookie = self._id_to_cookie(REST_VLANID, self.vlan_id)
         priority = self._get_priority(PRIORITY_DEFAULT_ROUTING)
         outport = None  # for drop
@@ -785,6 +1133,13 @@ class VlanRouter(object):
                          cookie, extra=self.sw_id)
 
     def _set_route_packetin(self, route):
+        """
+        Configure a packet in a route.
+
+        Args:
+            self: (todo): write your description
+            route: (str): write your description
+        """
         cookie = self._id_to_cookie(REST_ROUTEID, route.route_id)
         priority, log_msg = self._get_priority(PRIORITY_TYPE_ROUTE,
                                                route=route)
@@ -797,6 +1152,14 @@ class VlanRouter(object):
                          cookie, extra=self.sw_id)
 
     def delete_data(self, data, waiters):
+        """
+        Deletes the data from the route.
+
+        Args:
+            self: (todo): write your description
+            data: (todo): write your description
+            waiters: (int): write your description
+        """
         if REST_ROUTEID in data:
             route_id = data[REST_ROUTEID]
             msg = self._delete_routing_data(route_id, waiters)
@@ -809,6 +1172,14 @@ class VlanRouter(object):
         return self._response(msg)
 
     def _delete_address_data(self, address_id, waiters):
+        """
+        Deletes the interface data.
+
+        Args:
+            self: (todo): write your description
+            address_id: (str): write your description
+            waiters: (todo): write your description
+        """
         if address_id != REST_ALL:
             try:
                 address_id = int(address_id)
@@ -873,6 +1244,14 @@ class VlanRouter(object):
         return msg
 
     def _delete_routing_data(self, route_id, waiters):
+        """
+        Deletes route data.
+
+        Args:
+            self: (todo): write your description
+            route_id: (str): write your description
+            waiters: (todo): write your description
+        """
         if route_id != REST_ALL:
             try:
                 route_id = int(route_id)
@@ -922,6 +1301,13 @@ class VlanRouter(object):
         return msg
 
     def _chk_addr_relation_route(self, address_id):
+        """
+        Return a list of relation addresses.
+
+        Args:
+            self: (todo): write your description
+            address_id: (str): write your description
+        """
         # Check exist of related routing data.
         relate_list = []
         gateways = self.routing_tbl.get_gateways()
@@ -937,6 +1323,14 @@ class VlanRouter(object):
         return relate_list
 
     def packet_in_handler(self, msg, header_list):
+        """
+        Process incoming incoming incoming packet.
+
+        Args:
+            self: (todo): write your description
+            msg: (str): write your description
+            header_list: (list): write your description
+        """
         # Check invalid TTL (for OpenFlow V1.2/1.3)
         ofproto = self.dp.ofproto
         if ofproto.OFP_VERSION == ofproto_v1_2.OFP_VERSION or \
@@ -967,6 +1361,14 @@ class VlanRouter(object):
                 return
 
     def _packetin_arp(self, msg, header_list):
+        """
+        Process an arp packet.
+
+        Args:
+            self: (todo): write your description
+            msg: (str): write your description
+            header_list: (list): write your description
+        """
         src_addr = self.address_data.get_data(ip=header_list[ARP].src_ip)
         if src_addr is None:
             return
@@ -1046,6 +1448,14 @@ class VlanRouter(object):
                                          srcip, extra=self.sw_id)
 
     def _packetin_icmp_req(self, msg, header_list):
+        """
+        Send an iop packet.
+
+        Args:
+            self: (todo): write your description
+            msg: (str): write your description
+            header_list: (list): write your description
+        """
         # Send ICMP echo reply.
         in_port = self.ofctl.get_packetin_inport(msg)
         self.ofctl.send_icmp(in_port, header_list, self.vlan_id,
@@ -1061,6 +1471,14 @@ class VlanRouter(object):
                          extra=self.sw_id)
 
     def _packetin_tcp_udp(self, msg, header_list):
+        """
+        Process an udp packet.
+
+        Args:
+            self: (todo): write your description
+            msg: (str): write your description
+            header_list: (list): write your description
+        """
         # Send ICMP port unreach error.
         in_port = self.ofctl.get_packetin_inport(msg)
         self.ofctl.send_icmp(in_port, header_list, self.vlan_id,
@@ -1076,6 +1494,14 @@ class VlanRouter(object):
                          extra=self.sw_id)
 
     def _packetin_to_node(self, msg, header_list):
+        """
+        Send a packet to a packet.
+
+        Args:
+            self: (todo): write your description
+            msg: (str): write your description
+            header_list: (list): write your description
+        """
         if len(self.packet_buffer) >= MAX_SUSPENDPACKETS:
             self.logger.info('Packet is dropped, MAX_SUSPENDPACKETS exceeded.',
                              extra=self.sw_id)
@@ -1109,6 +1535,14 @@ class VlanRouter(object):
             self.logger.info('Send ARP request (flood)', extra=self.sw_id)
 
     def _packetin_invalid_ttl(self, msg, header_list):
+        """
+        Send a packet to tmin.
+
+        Args:
+            self: (todo): write your description
+            msg: (str): write your description
+            header_list: (list): write your description
+        """
         # Send ICMP TTL error.
         srcip = ip_addr_ntoa(header_list[IPV4].src)
         self.logger.info('Receive invalid ttl packet from [%s].', srcip,
@@ -1125,12 +1559,27 @@ class VlanRouter(object):
                              extra=self.sw_id)
 
     def send_arp_all_gw(self):
+        """
+        Send gateway gateway.
+
+        Args:
+            self: (todo): write your description
+        """
         gateways = self.routing_tbl.get_gateways()
         for gateway in gateways:
             address = self.address_data.get_data(ip=gateway)
             self.send_arp_request(address.default_gw, gateway)
 
     def send_arp_request(self, src_ip, dst_ip, in_port=None):
+        """
+        Send an arp request.
+
+        Args:
+            self: (todo): write your description
+            src_ip: (str): write your description
+            dst_ip: (todo): write your description
+            in_port: (int): write your description
+        """
         # Send ARP request from all ports.
         for send_port in self.port_data.values():
             if in_port is None or in_port != send_port.port_no:
@@ -1144,6 +1593,13 @@ class VlanRouter(object):
                                     arp_target_mac, inport, output)
 
     def send_icmp_unreach_error(self, packet_buffer):
+        """
+        Sends an icmp packet. gpg packet.
+
+        Args:
+            self: (todo): write your description
+            packet_buffer: (todo): write your description
+        """
         # Send ICMP host unreach error.
         self.logger.info('ARP reply wait timer was timed out.',
                          extra=self.sw_id)
@@ -1162,6 +1618,14 @@ class VlanRouter(object):
                              dstip, extra=self.sw_id)
 
     def _update_routing_tbl(self, msg, header_list):
+        """
+        Update gateway gateway with routing.
+
+        Args:
+            self: (todo): write your description
+            msg: (str): write your description
+            header_list: (list): write your description
+        """
         # Set flow: routing to gateway.
         out_port = self.ofctl.get_packetin_inport(msg)
         src_mac = header_list[ARP].src_mac
@@ -1191,6 +1655,14 @@ class VlanRouter(object):
         return gateway_flg
 
     def _learning_host_mac(self, msg, header_list):
+        """
+        Handle macros to - macros.
+
+        Args:
+            self: (todo): write your description
+            msg: (str): write your description
+            header_list: (list): write your description
+        """
         # Set flow: routing to internal Host.
         out_port = self.ofctl.get_packetin_inport(msg)
         src_mac = header_list[ARP].src_mac
@@ -1213,6 +1685,13 @@ class VlanRouter(object):
                                  cookie, extra=self.sw_id)
 
     def _get_send_port_ip(self, header_list):
+        """
+        Retrieve the ip address.
+
+        Args:
+            self: (todo): write your description
+            header_list: (list): write your description
+        """
         try:
             src_mac = header_list[ETHERNET].src
             if IPV4 in header_list:
@@ -1240,6 +1719,13 @@ class VlanRouter(object):
 
 class PortData(dict):
     def __init__(self, ports):
+        """
+        Init ports.
+
+        Args:
+            self: (todo): write your description
+            ports: (list): write your description
+        """
         super(PortData, self).__init__()
         for port in ports.values():
             data = Port(port.port_no, port.hw_addr)
@@ -1248,6 +1734,14 @@ class PortData(dict):
 
 class Port(object):
     def __init__(self, port_no, hw_addr):
+        """
+        Initialize a connection.
+
+        Args:
+            self: (todo): write your description
+            port_no: (str): write your description
+            hw_addr: (str): write your description
+        """
         super(Port, self).__init__()
         self.port_no = port_no
         self.mac = hw_addr
@@ -1255,10 +1749,23 @@ class Port(object):
 
 class AddressData(dict):
     def __init__(self):
+        """
+        Initialize the address.
+
+        Args:
+            self: (todo): write your description
+        """
         super(AddressData, self).__init__()
         self.address_id = 1
 
     def add(self, address):
+        """
+        Add an ip address to the interface.
+
+        Args:
+            self: (todo): write your description
+            address: (str): write your description
+        """
         err_msg = 'Invalid [%s] value.' % REST_ADDRESS
         nw_addr, mask, default_gw = nw_addr_aton(address, err_msg=err_msg)
 
@@ -1285,15 +1792,36 @@ class AddressData(dict):
         return address
 
     def delete(self, address_id):
+        """
+        Delete an address.
+
+        Args:
+            self: (dict): write your description
+            address_id: (str): write your description
+        """
         for key, value in self.items():
             if value.address_id == address_id:
                 del self[key]
                 return
 
     def get_default_gw(self):
+        """
+        Returns the default default gw value.
+
+        Args:
+            self: (todo): write your description
+        """
         return [address.default_gw for address in self.values()]
 
     def get_data(self, addr_id=None, ip=None):
+        """
+        Returns the data associated with the given address.
+
+        Args:
+            self: (todo): write your description
+            addr_id: (str): write your description
+            ip: (bool): write your description
+        """
         for address in self.values():
             if addr_id is not None:
                 if addr_id == address.address_id:
@@ -1307,6 +1835,16 @@ class AddressData(dict):
 
 class Address(object):
     def __init__(self, address_id, nw_addr, netmask, default_gw):
+        """
+        Initialize the netmask.
+
+        Args:
+            self: (todo): write your description
+            address_id: (str): write your description
+            nw_addr: (str): write your description
+            netmask: (todo): write your description
+            default_gw: (str): write your description
+        """
         super(Address, self).__init__()
         self.address_id = address_id
         self.nw_addr = nw_addr
@@ -1314,15 +1852,36 @@ class Address(object):
         self.default_gw = default_gw
 
     def __contains__(self, ip):
+        """
+        Return true if the given ip is contained in the given ip address.
+
+        Args:
+            self: (todo): write your description
+            ip: (str): write your description
+        """
         return bool(ipv4_apply_mask(ip, self.netmask) == self.nw_addr)
 
 
 class RoutingTable(dict):
     def __init__(self):
+        """
+        Initialize the route.
+
+        Args:
+            self: (todo): write your description
+        """
         super(RoutingTable, self).__init__()
         self.route_id = 1
 
     def add(self, dst_nw_addr, gateway_ip):
+        """
+        Adds a route to a routing interface.
+
+        Args:
+            self: (todo): write your description
+            dst_nw_addr: (int): write your description
+            gateway_ip: (int): write your description
+        """
         err_msg = 'Invalid [%s] value.'
 
         if dst_nw_addr == DEFAULT_ROUTE:
@@ -1359,15 +1918,36 @@ class RoutingTable(dict):
         return routing_data
 
     def delete(self, route_id):
+        """
+        Deletes an existing route.
+
+        Args:
+            self: (dict): write your description
+            route_id: (str): write your description
+        """
         for key, value in self.items():
             if value.route_id == route_id:
                 del self[key]
                 return
 
     def get_gateways(self):
+        """
+        Return gateway gateway gateway gateway.
+
+        Args:
+            self: (todo): write your description
+        """
         return [routing_data.gateway_ip for routing_data in self.values()]
 
     def get_data(self, gw_mac=None, dst_ip=None):
+        """
+        Get the ip address.
+
+        Args:
+            self: (todo): write your description
+            gw_mac: (bool): write your description
+            dst_ip: (str): write your description
+        """
         if gw_mac is not None:
             for route in self.values():
                 if gw_mac == route.gateway_mac:
@@ -1393,6 +1973,16 @@ class RoutingTable(dict):
 
 class Route(object):
     def __init__(self, route_id, dst_ip, netmask, gateway_ip):
+        """
+        Initialize gateway.
+
+        Args:
+            self: (todo): write your description
+            route_id: (str): write your description
+            dst_ip: (str): write your description
+            netmask: (todo): write your description
+            gateway_ip: (int): write your description
+        """
         super(Route, self).__init__()
         self.route_id = route_id
         self.dst_ip = dst_ip
@@ -1403,15 +1993,39 @@ class Route(object):
 
 class SuspendPacketList(list):
     def __init__(self, timeout_function):
+        """
+        Initialize the function.
+
+        Args:
+            self: (todo): write your description
+            timeout_function: (int): write your description
+        """
         super(SuspendPacketList, self).__init__()
         self.timeout_function = timeout_function
 
     def add(self, in_port, header_list, data):
+        """
+        Add a new consumer.
+
+        Args:
+            self: (todo): write your description
+            in_port: (int): write your description
+            header_list: (list): write your description
+            data: (todo): write your description
+        """
         suspend_pkt = SuspendPacket(in_port, header_list, data,
                                     self.wait_arp_reply_timer)
         self.append(suspend_pkt)
 
     def delete(self, pkt=None, del_addr=None):
+        """
+        Delete a packet.
+
+        Args:
+            self: (todo): write your description
+            pkt: (str): write your description
+            del_addr: (str): write your description
+        """
         if pkt is not None:
             del_list = [pkt]
         else:
@@ -1424,9 +2038,23 @@ class SuspendPacketList(list):
             pkt.wait_thread.wait()
 
     def get_data(self, dst_ip):
+        """
+        Get the ip address for the given ip address.
+
+        Args:
+            self: (todo): write your description
+            dst_ip: (str): write your description
+        """
         return [pkt for pkt in self if pkt.dst_ip == dst_ip]
 
     def wait_arp_reply_timer(self, suspend_pkt):
+        """
+        Wait for an arpkt reply.
+
+        Args:
+            self: (todo): write your description
+            suspend_pkt: (todo): write your description
+        """
         hub.sleep(ARP_REPLY_TIMER)
         if suspend_pkt in self:
             self.timeout_function(suspend_pkt)
@@ -1435,6 +2063,16 @@ class SuspendPacketList(list):
 
 class SuspendPacket(object):
     def __init__(self, in_port, header_list, data, timer):
+        """
+        Initialize the connection.
+
+        Args:
+            self: (todo): write your description
+            in_port: (int): write your description
+            header_list: (list): write your description
+            data: (todo): write your description
+            timer: (todo): write your description
+        """
         super(SuspendPacket, self).__init__()
         self.in_port = in_port
         self.dst_ip = header_list[IPV4].dst
@@ -1449,13 +2087,32 @@ class OfCtl(object):
 
     @staticmethod
     def register_of_version(version):
+        """
+        Decorator to the given version.
+
+        Args:
+            version: (str): write your description
+        """
         def _register_of_version(cls):
+            """
+            Registers a ctl class.
+
+            Args:
+                cls: (todo): write your description
+            """
             OfCtl._OF_VERSIONS.setdefault(version, cls)
             return cls
         return _register_of_version
 
     @staticmethod
     def factory(dp, logger):
+        """
+        Creates a ctl :
+
+        Args:
+            dp: (array): write your description
+            logger: (todo): write your description
+        """
         of_version = dp.ofproto.OFP_VERSION
         if of_version in OfCtl._OF_VERSIONS:
             ofctl = OfCtl._OF_VERSIONS[of_version](dp, logger)
@@ -1465,23 +2122,70 @@ class OfCtl(object):
         return ofctl
 
     def __init__(self, dp, logger):
+        """
+        Initialize log file.
+
+        Args:
+            self: (todo): write your description
+            dp: (int): write your description
+            logger: (todo): write your description
+        """
         super(OfCtl, self).__init__()
         self.dp = dp
         self.sw_id = {'sw_id': dpid_lib.dpid_to_str(dp.id)}
         self.logger = logger
 
     def set_sw_config_for_ttl(self):
+        """
+        Set the sw_for_tt_for_tt_tt_for_tt_for_tt_for_tt_for_for_
+
+        Args:
+            self: (todo): write your description
+        """
         # OpenFlow v1_2/1_3.
         pass
 
     def set_flow(self, cookie, priority, dl_type=0, dl_dst=0, dl_vlan=0,
                  nw_src=0, src_mask=32, nw_dst=0, dst_mask=32,
                  nw_proto=0, idle_timeout=0, actions=None):
+        """
+        Sets a flow.
+
+        Args:
+            self: (todo): write your description
+            cookie: (todo): write your description
+            priority: (int): write your description
+            dl_type: (str): write your description
+            dl_dst: (todo): write your description
+            dl_vlan: (todo): write your description
+            nw_src: (todo): write your description
+            src_mask: (todo): write your description
+            nw_dst: (todo): write your description
+            dst_mask: (todo): write your description
+            nw_proto: (todo): write your description
+            idle_timeout: (int): write your description
+            actions: (todo): write your description
+        """
         # Abstract method
         raise NotImplementedError()
 
     def send_arp(self, arp_opcode, vlan_id, src_mac, dst_mac,
                  src_ip, dst_ip, arp_target_mac, in_port, output):
+        """
+        Send a args vlan.
+
+        Args:
+            self: (todo): write your description
+            arp_opcode: (str): write your description
+            vlan_id: (str): write your description
+            src_mac: (str): write your description
+            dst_mac: (str): write your description
+            src_ip: (str): write your description
+            dst_ip: (str): write your description
+            arp_target_mac: (str): write your description
+            in_port: (int): write your description
+            output: (str): write your description
+        """
         # Generate ARP packet
         if vlan_id != VLANID_NONE:
             ether_proto = ether.ETH_TYPE_8021Q
@@ -1511,6 +2215,20 @@ class OfCtl(object):
 
     def send_icmp(self, in_port, protocol_list, vlan_id, icmp_type,
                   icmp_code, icmp_data=None, msg_data=None, src_ip=None):
+        """
+        Send icmp packet.
+
+        Args:
+            self: (todo): write your description
+            in_port: (int): write your description
+            protocol_list: (list): write your description
+            vlan_id: (str): write your description
+            icmp_type: (str): write your description
+            icmp_code: (str): write your description
+            icmp_data: (todo): write your description
+            msg_data: (str): write your description
+            src_ip: (str): write your description
+        """
         # Generate ICMP reply packet
         csum = 0
         offset = ethernet.ethernet._MIN_LEN
@@ -1584,6 +2302,16 @@ class OfCtl(object):
                              pkt.data, data_str=str(pkt))
 
     def send_packet_out(self, in_port, output, data, data_str=None):
+        """
+        Send a packet to the output.
+
+        Args:
+            self: (todo): write your description
+            in_port: (int): write your description
+            output: (todo): write your description
+            data: (todo): write your description
+            data_str: (str): write your description
+        """
         actions = [self.dp.ofproto_parser.OFPActionOutput(output, 0)]
         self.dp.send_packet_out(buffer_id=UINT32_MAX, in_port=in_port,
                                 actions=actions, data=data)
@@ -1593,12 +2321,34 @@ class OfCtl(object):
         # self.logger.debug('Packet out = %s', data_str, extra=self.sw_id)
 
     def set_normal_flow(self, cookie, priority):
+        """
+        Set the cookie : attr : cookie.
+
+        Args:
+            self: (todo): write your description
+            cookie: (todo): write your description
+            priority: (int): write your description
+        """
         out_port = self.dp.ofproto.OFPP_NORMAL
         actions = [self.dp.ofproto_parser.OFPActionOutput(out_port, 0)]
         self.set_flow(cookie, priority, actions=actions)
 
     def set_packetin_flow(self, cookie, priority, dl_type=0, dl_dst=0,
                           dl_vlan=0, dst_ip=0, dst_mask=32, nw_proto=0):
+        """
+        Set flow flow
+
+        Args:
+            self: (todo): write your description
+            cookie: (todo): write your description
+            priority: (int): write your description
+            dl_type: (str): write your description
+            dl_dst: (todo): write your description
+            dl_vlan: (str): write your description
+            dst_ip: (todo): write your description
+            dst_mask: (todo): write your description
+            nw_proto: (todo): write your description
+        """
         miss_send_len = UINT16_MAX
         actions = [self.dp.ofproto_parser.OFPActionOutput(
             self.dp.ofproto.OFPP_CONTROLLER, miss_send_len)]
@@ -1607,6 +2357,14 @@ class OfCtl(object):
                       nw_proto=nw_proto, actions=actions)
 
     def send_stats_request(self, stats, waiters):
+        """
+        Send a stats.
+
+        Args:
+            self: (todo): write your description
+            stats: (str): write your description
+            waiters: (dict): write your description
+        """
         self.dp.set_xid(stats)
         waiters_per_dp = waiters.setdefault(self.dp.id, {})
         event = hub.Event()
@@ -1626,12 +2384,34 @@ class OfCtl(object):
 class OfCtl_v1_0(OfCtl):
 
     def __init__(self, dp, logger):
+        """
+        Initialize logger.
+
+        Args:
+            self: (todo): write your description
+            dp: (int): write your description
+            logger: (todo): write your description
+        """
         super(OfCtl_v1_0, self).__init__(dp, logger)
 
     def get_packetin_inport(self, msg):
+        """
+        : param message from the : class.
+
+        Args:
+            self: (todo): write your description
+            msg: (str): write your description
+        """
         return msg.in_port
 
     def get_all_flow(self, waiters):
+        """
+        Get all flow flow.
+
+        Args:
+            self: (todo): write your description
+            waiters: (list): write your description
+        """
         ofp = self.dp.ofproto
         ofp_parser = self.dp.ofproto_parser
 
@@ -1644,6 +2424,24 @@ class OfCtl_v1_0(OfCtl):
     def set_flow(self, cookie, priority, dl_type=0, dl_dst=0, dl_vlan=0,
                  nw_src=0, src_mask=32, nw_dst=0, dst_mask=32,
                  nw_proto=0, idle_timeout=0, actions=None):
+        """
+        Set a flow.
+
+        Args:
+            self: (todo): write your description
+            cookie: (todo): write your description
+            priority: (int): write your description
+            dl_type: (str): write your description
+            dl_dst: (todo): write your description
+            dl_vlan: (todo): write your description
+            nw_src: (todo): write your description
+            src_mask: (todo): write your description
+            nw_dst: (todo): write your description
+            dst_mask: (todo): write your description
+            nw_proto: (todo): write your description
+            idle_timeout: (int): write your description
+            actions: (todo): write your description
+        """
         ofp = self.dp.ofproto
         ofp_parser = self.dp.ofproto_parser
         cmd = ofp.OFPFC_ADD
@@ -1682,6 +2480,24 @@ class OfCtl_v1_0(OfCtl):
     def set_routing_flow(self, cookie, priority, outport, dl_vlan=0,
                          nw_src=0, src_mask=32, nw_dst=0, dst_mask=32,
                          src_mac=0, dst_mac=0, idle_timeout=0, **dummy):
+        """
+        Configure flow flow.
+
+        Args:
+            self: (todo): write your description
+            cookie: (todo): write your description
+            priority: (int): write your description
+            outport: (int): write your description
+            dl_vlan: (todo): write your description
+            nw_src: (todo): write your description
+            src_mask: (todo): write your description
+            nw_dst: (todo): write your description
+            dst_mask: (todo): write your description
+            src_mac: (todo): write your description
+            dst_mac: (todo): write your description
+            idle_timeout: (todo): write your description
+            dummy: (todo): write your description
+        """
         ofp_parser = self.dp.ofproto_parser
 
         dl_type = ether.ETH_TYPE_IP
@@ -1703,6 +2519,13 @@ class OfCtl_v1_0(OfCtl):
                       idle_timeout=idle_timeout, actions=actions)
 
     def delete_flow(self, flow_stats):
+        """
+        Delete flow from flow
+
+        Args:
+            self: (todo): write your description
+            flow_stats: (todo): write your description
+        """
         match = flow_stats.match
         cookie = flow_stats.cookie
         cmd = self.dp.ofproto.OFPFC_DELETE_STRICT
@@ -1718,12 +2541,33 @@ class OfCtl_v1_0(OfCtl):
 class OfCtl_after_v1_2(OfCtl):
 
     def __init__(self, dp, logger):
+        """
+        Initialize dtl.
+
+        Args:
+            self: (todo): write your description
+            dp: (int): write your description
+            logger: (todo): write your description
+        """
         super(OfCtl_after_v1_2, self).__init__(dp, logger)
 
     def set_sw_config_for_ttl(self):
+        """
+        Set the sw_for_tt_for_tt_tt_for_tt_for_tt_for_tt_for_for_
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def get_packetin_inport(self, msg):
+        """
+        Get the next packet from a packet.
+
+        Args:
+            self: (todo): write your description
+            msg: (str): write your description
+        """
         in_port = self.dp.ofproto.OFPP_ANY
         for match_field in msg.match.fields:
             if match_field.header == self.dp.ofproto.OXM_OF_IN_PORT:
@@ -1732,11 +2576,36 @@ class OfCtl_after_v1_2(OfCtl):
         return in_port
 
     def get_all_flow(self, waiters):
+        """
+        Returns all the list of the specified waiters.
+
+        Args:
+            self: (todo): write your description
+            waiters: (list): write your description
+        """
         pass
 
     def set_flow(self, cookie, priority, dl_type=0, dl_dst=0, dl_vlan=0,
                  nw_src=0, src_mask=32, nw_dst=0, dst_mask=32,
                  nw_proto=0, idle_timeout=0, actions=None):
+        """
+        Set a flow.
+
+        Args:
+            self: (todo): write your description
+            cookie: (todo): write your description
+            priority: (int): write your description
+            dl_type: (str): write your description
+            dl_dst: (todo): write your description
+            dl_vlan: (todo): write your description
+            nw_src: (todo): write your description
+            src_mask: (todo): write your description
+            nw_dst: (todo): write your description
+            dst_mask: (todo): write your description
+            nw_proto: (todo): write your description
+            idle_timeout: (int): write your description
+            actions: (todo): write your description
+        """
         ofp = self.dp.ofproto
         ofp_parser = self.dp.ofproto_parser
         cmd = ofp.OFPFC_ADD
@@ -1774,6 +2643,24 @@ class OfCtl_after_v1_2(OfCtl):
     def set_routing_flow(self, cookie, priority, outport, dl_vlan=0,
                          nw_src=0, src_mask=32, nw_dst=0, dst_mask=32,
                          src_mac=0, dst_mac=0, idle_timeout=0, dec_ttl=False):
+        """
+        Set flow flow
+
+        Args:
+            self: (todo): write your description
+            cookie: (todo): write your description
+            priority: (int): write your description
+            outport: (int): write your description
+            dl_vlan: (todo): write your description
+            nw_src: (todo): write your description
+            src_mask: (todo): write your description
+            nw_dst: (todo): write your description
+            dst_mask: (todo): write your description
+            src_mac: (todo): write your description
+            dst_mac: (todo): write your description
+            idle_timeout: (todo): write your description
+            dec_ttl: (todo): write your description
+        """
         ofp = self.dp.ofproto
         ofp_parser = self.dp.ofproto_parser
 
@@ -1795,6 +2682,13 @@ class OfCtl_after_v1_2(OfCtl):
                       idle_timeout=idle_timeout, actions=actions)
 
     def delete_flow(self, flow_stats):
+        """
+        Delete flow
+
+        Args:
+            self: (todo): write your description
+            flow_stats: (todo): write your description
+        """
         ofp = self.dp.ofproto
         ofp_parser = self.dp.ofproto_parser
 
@@ -1815,9 +2709,23 @@ class OfCtl_after_v1_2(OfCtl):
 class OfCtl_v1_2(OfCtl_after_v1_2):
 
     def __init__(self, dp, logger):
+        """
+        Initialize logger.
+
+        Args:
+            self: (todo): write your description
+            dp: (int): write your description
+            logger: (todo): write your description
+        """
         super(OfCtl_v1_2, self).__init__(dp, logger)
 
     def set_sw_config_for_ttl(self):
+        """
+        Set sw_config_for_tt_tt )
+
+        Args:
+            self: (todo): write your description
+        """
         flags = self.dp.ofproto.OFPC_INVALID_TTL_TO_CONTROLLER
         miss_send_len = UINT16_MAX
         m = self.dp.ofproto_parser.OFPSetConfig(self.dp, flags,
@@ -1827,6 +2735,13 @@ class OfCtl_v1_2(OfCtl_after_v1_2):
                          extra=self.sw_id)
 
     def get_all_flow(self, waiters):
+        """
+        Get all available flow.
+
+        Args:
+            self: (todo): write your description
+            waiters: (list): write your description
+        """
         ofp = self.dp.ofproto
         ofp_parser = self.dp.ofproto_parser
 
@@ -1840,9 +2755,23 @@ class OfCtl_v1_2(OfCtl_after_v1_2):
 class OfCtl_v1_3(OfCtl_after_v1_2):
 
     def __init__(self, dp, logger):
+        """
+        Initialize logger.
+
+        Args:
+            self: (todo): write your description
+            dp: (int): write your description
+            logger: (todo): write your description
+        """
         super(OfCtl_v1_3, self).__init__(dp, logger)
 
     def set_sw_config_for_ttl(self):
+        """
+        Set the sw_config_for_tt_tt_tt_tt_for_tt )
+
+        Args:
+            self: (todo): write your description
+        """
         packet_in_mask = (1 << self.dp.ofproto.OFPR_ACTION |
                           1 << self.dp.ofproto.OFPR_INVALID_TTL)
         port_status_mask = (1 << self.dp.ofproto.OFPPR_ADD |
@@ -1859,6 +2788,13 @@ class OfCtl_v1_3(OfCtl_after_v1_2):
                          extra=self.sw_id)
 
     def get_all_flow(self, waiters):
+        """
+        Get all available flow.
+
+        Args:
+            self: (todo): write your description
+            waiters: (list): write your description
+        """
         ofp = self.dp.ofproto
         ofp_parser = self.dp.ofproto_parser
 
@@ -1869,6 +2805,13 @@ class OfCtl_v1_3(OfCtl_after_v1_2):
 
 
 def ip_addr_aton(ip_str, err_msg=None):
+    """
+    Convert an ip address from an ip address.
+
+    Args:
+        ip_str: (str): write your description
+        err_msg: (str): write your description
+    """
     try:
         return addrconv.ipv4.bin_to_text(socket.inet_aton(ip_str))
     except (struct.error, socket.error) as e:
@@ -1878,10 +2821,23 @@ def ip_addr_aton(ip_str, err_msg=None):
 
 
 def ip_addr_ntoa(ip):
+    """
+    Convert ip address to ipv4.
+
+    Args:
+        ip: (todo): write your description
+    """
     return socket.inet_ntoa(addrconv.ipv4.text_to_bin(ip))
 
 
 def mask_ntob(mask, err_msg=None):
+    """
+    Mask a boolean mask.
+
+    Args:
+        mask: (array): write your description
+        err_msg: (str): write your description
+    """
     try:
         return (UINT32_MAX << (32 - mask)) & UINT32_MAX
     except ValueError:
@@ -1892,6 +2848,14 @@ def mask_ntob(mask, err_msg=None):
 
 
 def ipv4_apply_mask(address, prefix_len, err_msg=None):
+    """
+    Convert ipv4 address to ipv4 address.
+
+    Args:
+        address: (str): write your description
+        prefix_len: (str): write your description
+        err_msg: (str): write your description
+    """
     import itertools
 
     assert isinstance(address, str)
@@ -1900,11 +2864,23 @@ def ipv4_apply_mask(address, prefix_len, err_msg=None):
 
 
 def ipv4_int_to_text(ip_int):
+    """
+    Convert ip_int to int.
+
+    Args:
+        ip_int: (todo): write your description
+    """
     assert isinstance(ip_int, numbers.Integral)
     return addrconv.ipv4.bin_to_text(struct.pack('!I', ip_int))
 
 
 def ipv4_text_to_int(ip_text):
+    """
+    Convert ip_text_text to int.
+
+    Args:
+        ip_text: (str): write your description
+    """
     if ip_text == 0:
         return ip_text
     assert isinstance(ip_text, str)
@@ -1912,6 +2888,13 @@ def ipv4_text_to_int(ip_text):
 
 
 def nw_addr_aton(nw_addr, err_msg=None):
+    """
+    Convert an ipv4 address to a ipv4 address.
+
+    Args:
+        nw_addr: (str): write your description
+        err_msg: (str): write your description
+    """
     ip_mask = nw_addr.split('/')
     default_route = ip_addr_aton(ip_mask[0], err_msg=err_msg)
     netmask = 32

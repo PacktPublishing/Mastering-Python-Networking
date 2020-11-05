@@ -15,10 +15,24 @@ class Device(db.Model):
     vendor = db.Column(db.String(40))
 
     def __init__(self, hostname, vendor):
+        """
+        Initialize a hostname.
+
+        Args:
+            self: (todo): write your description
+            hostname: (str): write your description
+            vendor: (str): write your description
+        """
         self.hostname = hostname
         self.vendor = vendor
 
     def __repr__(self):
+        """
+        Return a human - readable representation of this object.
+
+        Args:
+            self: (todo): write your description
+        """
         return '<Device %r>' % self.hostname
 
 

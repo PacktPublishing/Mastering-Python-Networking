@@ -18,6 +18,14 @@ gig0_0_out_uPackets = '1.3.6.1.2.1.2.2.1.17.1'
 
 
 def snmp_query(host, community, oid):
+    """
+    Perform snmp query.
+
+    Args:
+        host: (str): write your description
+        community: (str): write your description
+        oid: (str): write your description
+    """
     errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
         cmdgen.CommunityData(community),
         cmdgen.UdpTransportTarget((host, 161)),

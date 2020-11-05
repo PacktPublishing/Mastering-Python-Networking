@@ -32,9 +32,23 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
 
     def set_password(self, password):
+        """
+        Set the password of the password.
+
+        Args:
+            self: (todo): write your description
+            password: (str): write your description
+        """
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
+        """
+        Verifies whether a given password matches.
+
+        Args:
+            self: (todo): write your description
+            password: (str): write your description
+        """
         return check_password_hash(self.password_hash, password)
 
 
@@ -49,9 +63,21 @@ class Device(db.Model):
     os = db.Column(db.String(64))
 
     def get_url(self):
+        """
+        Returns the url of the resource.
+
+        Args:
+            self: (todo): write your description
+        """
         return url_for('get_device', id=self.id, _external=True)
 
     def export_data(self):
+        """
+        Exports data to json.
+
+        Args:
+            self: (todo): write your description
+        """
         return {
             'self_url': self.get_url(),
             'hostname': self.hostname,
@@ -63,6 +89,13 @@ class Device(db.Model):
         }
 
     def import_data(self, data):
+        """
+        Import data
+
+        Args:
+            self: (todo): write your description
+            data: (array): write your description
+        """
         try:
             self.hostname = data['hostname']
             self.loopback = data['loopback']
@@ -87,10 +120,20 @@ def background(f):
     system."""
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
+        """
+        A decorator toilio. client. background_tasks
+
+        Args:
+        """
         # The background task needs to be decorated with Flask's
         # copy_current_request_context to have access to context globals.
         @copy_current_request_context
         def task():
+            """
+            Create a task : class.
+
+            Args:
+            """
             global background_tasks
             try:
                 # invoke the wrapped function and record the returned
@@ -116,6 +159,13 @@ def background(f):
 # g is the context request object from Flask
 @auth.verify_password
 def verify_password(username, password):
+    """
+    Verify a given username
+
+    Args:
+        username: (str): write your description
+        password: (str): write your description
+    """
     g.user = User.query.filter_by(username=username).first()
     if g.user is None:
         return False
@@ -124,11 +174,21 @@ def verify_password(username, password):
 @app.before_request
 @auth.login_required
 def before_request():
+    """
+    Decor function to request.
+
+    Args:
+    """
     pass
 
 # from HTTPAuath extension
 @auth.error_handler
 def unathorized():
+    """
+    Unath an unath
+
+    Args:
+    """
     response = jsonify({'status': 401, 'error': 'unahtorized', 
                         'message': 'please authenticate'})
     response.status_code = 401
@@ -137,17 +197,34 @@ def unathorized():
 
 @app.route('/devices/', methods=['GET'])
 def get_devices():
+    """
+    Get all devices.
+
+    Args:
+    """
     return jsonify({'device': [device.get_url() 
                                for device in Device.query.all()]})
 
 @app.route('/devices/<int:id>', methods=['GET'])
 def get_device(id):
+    """
+    Get device.
+
+    Args:
+        id: (int): write your description
+    """
     return jsonify(Device.query.get_or_404(id).export_data())
 
 
 @app.route('/devices/<int:id>/version', methods=['GET'])
 @background
 def get_device_version(id):
+    """
+    Get device version.
+
+    Args:
+        id: (int): write your description
+    """
     device = Device.query.get_or_404(id)
     hostname = device.hostname
     ip = device.mgmt_ip
@@ -158,6 +235,12 @@ def get_device_version(id):
 @app.route('/devices/<device_role>/version', methods=['GET'])
 @background
 def get_role_version(device_role):
+    """
+    Get role version.
+
+    Args:
+        device_role: (todo): write your description
+    """
     device_id_list = [device.id for device in Device.query.all() if device.role == device_role]
     result = {}
     for id in device_id_list:
@@ -171,6 +254,11 @@ def get_role_version(device_role):
 
 @app.route('/devices/', methods=['POST'])
 def new_device():
+    """
+    Create new device.
+
+    Args:
+    """
     device = Device()
     device.import_data(request.json)
     db.session.add(device)
@@ -179,6 +267,12 @@ def new_device():
 
 @app.route('/devices/<int:id>', methods=['PUT'])
 def edit_device(id):
+    """
+    Edit device.
+
+    Args:
+        id: (int): write your description
+    """
     device = Device.query.get_or_404(id)
     device.import_data(request.json)
     db.session.add(device)

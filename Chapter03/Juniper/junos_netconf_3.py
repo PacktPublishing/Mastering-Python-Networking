@@ -5,6 +5,15 @@ from ncclient.xml_ import new_ele, sub_ele
 
 # make a connection object
 def connect(host, port, user, password):
+    """
+    Connect to a redis server.
+
+    Args:
+        host: (str): write your description
+        port: (int): write your description
+        user: (todo): write your description
+        password: (str): write your description
+    """
     connection = manager.connect(host=host, port=port, username=user,
             password=password, timeout=10, device_params={'name':'junos'},
             hostkey_verify=False)
@@ -12,11 +21,25 @@ def connect(host, port, user, password):
 
 # execute show commands 
 def show_cmds(conn, cmd):
+    """
+    Execute a command.
+
+    Args:
+        conn: (todo): write your description
+        cmd: (str): write your description
+    """
     result = conn.command(cmd, format='text')
     return result
 
 # push out configuration
 def config_cmds(conn, config):
+    """
+    Return configuration ::
+
+    Args:
+        conn: (todo): write your description
+        config: (dict): write your description
+    """
     conn.lock()
     conn.load_configuration(config=config)
     commit_config = conn.commit()

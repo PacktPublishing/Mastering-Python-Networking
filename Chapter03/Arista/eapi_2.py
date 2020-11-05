@@ -8,6 +8,13 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 # Run Arista commands thru eAPI
 def runAristaCommands(switch_object, list_of_commands):
+    """
+    Run a list of commands.
+
+    Args:
+        switch_object: (todo): write your description
+        list_of_commands: (list): write your description
+    """
     response = switch_object.runCmds(1, list_of_commands)
     return response
 

@@ -25,9 +25,21 @@ class Device(db.Model):
     os = db.Column(db.String(64))
 
     def get_url(self):
+        """
+        Returns the url of the resource.
+
+        Args:
+            self: (todo): write your description
+        """
         return url_for('get_device', id=self.id, _external=True)
 
     def export_data(self):
+        """
+        Exports data to json.
+
+        Args:
+            self: (todo): write your description
+        """
         return {
             'self_url': self.get_url(),
             'hostname': self.hostname,
@@ -39,6 +51,13 @@ class Device(db.Model):
         }
 
     def import_data(self, data):
+        """
+        Import data
+
+        Args:
+            self: (todo): write your description
+            data: (array): write your description
+        """
         try:
             self.hostname = data['hostname']
             self.loopback = data['loopback']
@@ -53,16 +72,33 @@ class Device(db.Model):
 
 @app.route('/devices/', methods=['GET'])
 def get_devices():
+    """
+    Get all devices.
+
+    Args:
+    """
     return jsonify({'device': [device.get_url() 
                                for device in Device.query.all()]})
 
 @app.route('/devices/<int:id>', methods=['GET'])
 def get_device(id):
+    """
+    Get device.
+
+    Args:
+        id: (int): write your description
+    """
     return jsonify(Device.query.get_or_404(id).export_data())
 
 
 @app.route('/devices/<int:id>/version', methods=['GET'])
 def get_device_version(id):
+    """
+    Get device version.
+
+    Args:
+        id: (int): write your description
+    """
     device = Device.query.get_or_404(id)
     hostname = device.hostname
     ip = device.mgmt_ip
@@ -72,6 +108,12 @@ def get_device_version(id):
 
 @app.route('/devices/<device_role>/version', methods=['GET'])
 def get_role_version(device_role):
+    """
+    Get role version.
+
+    Args:
+        device_role: (todo): write your description
+    """
     device_id_list = [device.id for device in Device.query.all() if device.role == device_role]
     result = {}
     for id in device_id_list:
@@ -85,6 +127,11 @@ def get_role_version(device_role):
 
 @app.route('/devices/', methods=['POST'])
 def new_device():
+    """
+    Create new device.
+
+    Args:
+    """
     device = Device()
     device.import_data(request.json)
     db.session.add(device)
@@ -93,6 +140,12 @@ def new_device():
 
 @app.route('/devices/<int:id>', methods=['PUT'])
 def edit_device(id):
+    """
+    Edit device.
+
+    Args:
+        id: (int): write your description
+    """
     device = Device.query.get_or_404(id)
     device.import_data(request.json)
     db.session.add(device)

@@ -12,6 +12,12 @@ password = getpass.getpass('Password: ')
 max_buffer = 65535
 
 def clear_buffer(connection):
+    """
+    Clears the buffer buffer
+
+    Args:
+        connection: (todo): write your description
+    """
     if connection.recv_ready():
         return connection.recv(max_buffer)
 

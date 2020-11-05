@@ -40,6 +40,11 @@ ssl._create_default_https_context = ssl._create_unverified_context
 # No more dealing with annoying line numbers in the CLI!
 
 def main():
+    """
+    Main function.
+
+    Args:
+    """
    parser = argparse.ArgumentParser(description="Edit Arista ACLs using your local editor")
    parser.add_argument("acl", metavar="ACL",
                        help="Name of the access list to modify")
